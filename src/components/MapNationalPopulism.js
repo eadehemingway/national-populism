@@ -43,7 +43,7 @@ export default function NationalPopulism() {
       .scale(1500 / Math.PI / 2)
       .translate([580, 450])
 
-    const svg = d3.select("#map").attr("width", 1500).attr("height", 900)
+    const svg = d3.select("#map").attr("width", 1400).attr("height", 900)
 
     const countryGroups = svg
       .selectAll(".country-groups")
