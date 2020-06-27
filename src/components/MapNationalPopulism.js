@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import * as d3 from "d3"
 import data from "../data/mapEuropeWithElectionData"
@@ -67,21 +67,27 @@ export default function NationalPopulism() {
       .enter()
       .append("g")
       .attr("class", "tooltip-groups")
-      .attr("class", d => `tooltip-${d.properties.name_long}`)
+      .attr("class", d => `tooltip-${d.properties.postal}`)
       .style("visibility", "hidden")
 
     tooltipGroups
       .append("rect")
       .attr("class", "tooltip-rect")
-      .attr("width", 280)
+      .attr("width", 300)
       .attr("height", 60)
       .attr("fill", "white")
 
     tooltipGroups
       .append("text")
-      .attr("class", "tooltip-text")
+      .attr("class", "tooltip-text-l1")
       .attr("x", 10)
       .attr("y", 20)
+      .attr("font-family", "Major Mono")
+    tooltipGroups
+      .append("text")
+      .attr("class", "tooltip-text-l2")
+      .attr("x", 10)
+      .attr("y", 40)
       .attr("font-family", "Major Mono")
   }
 
@@ -89,20 +95,22 @@ export default function NationalPopulism() {
     const tooltipPadding = 10
     const countryGroups = d3.selectAll(".country-groups")
 
-    d3.selectAll(".tooltip-text").text(d => {
+    d3.selectAll(".tooltip-text-l1").text(d => {
       if (d.properties.electionData) {
-        return `${d.properties.name_long}: ${
-          d.properties.electionData[index].value
-        }% (${1980 + index})`
+        return `${d.properties.name_long}: ${d.properties.electionData[index].value}% `
       } else {
         return `${d.properties.name_long}`
       }
     })
+    d3.selectAll(".tooltip-text-l2").text(d => {
+      return `(${1980 + index})`
+    })
 
     countryGroups
       .on("mouseover", function (d) {
-        d3.select(`.tooltip-${d.properties.name_long}`)
+        d3.select(`.tooltip-${d.properties.postal}`)
           .style("visibility", "visible")
+
           .attr(
             "transform",
             `translate(${d3.event.offsetX + tooltipPadding},${
@@ -111,14 +119,14 @@ export default function NationalPopulism() {
           )
       })
       .on("mousemove", d => {
-        d3.select(`.tooltip-${d.properties.name_long}`).attr(
+        d3.select(`.tooltip-${d.properties.postal}`).attr(
           "transform",
           `translate(${d3.event.offsetX + tooltipPadding},${d3.event.offsetY})`
         )
       })
       .on("mouseout", d =>
         d3
-          .select(`.tooltip-${d.properties.name_long}`)
+          .select(`.tooltip-${d.properties.postal}`)
           .style("visibility", "hidden")
       )
   }
