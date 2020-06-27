@@ -13,7 +13,8 @@ export default function ArticleTwo() {
 
 const ArticleTitle = styled.h1`
   width: 20%;
-  margin-top: 20px;
+  margin-top: 0;
+  padding-top: 20px;
   margin-left: 10px;
   font-size: 30px;
   color: #ff5c00;
@@ -23,4 +24,6 @@ const ArticleTitle = styled.h1`
 `
 const Container = styled.div`
   position: relative;
+  background: #efe5db;
+  height: 100vh;
 `

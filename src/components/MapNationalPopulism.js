@@ -73,7 +73,7 @@ export default function NationalPopulism() {
     tooltipGroups
       .append("rect")
       .attr("class", "tooltip-rect")
-      .attr("width", 200)
+      .attr("width", 280)
       .attr("height", 60)
       .attr("fill", "white")
 
@@ -91,7 +91,9 @@ export default function NationalPopulism() {
 
     d3.selectAll(".tooltip-text").text(d => {
       if (d.properties.electionData) {
-        return `${d.properties.name_long}: ${d.properties.electionData[index].value}`
+        return `${d.properties.name_long}: ${
+          d.properties.electionData[index].value
+        }% (${1980 + index})`
       } else {
         return `${d.properties.name_long}`
       }
@@ -122,7 +124,16 @@ export default function NationalPopulism() {
   }
   return (
     <MapWrapper>
-      <Year>{1980 + index}</Year>
+      <InfoBox>
+        <Description>
+          The darker the red color of the country, the higher percentage of
+          voters voted for national populism party that year. data from{" "}
+          <a href="https://populismindex.com/data/">
+            Timbro authoritarian populism index
+          </a>{" "}
+        </Description>
+        <Year>{1980 + index}</Year>
+      </InfoBox>
       <svg id="map" />
     </MapWrapper>
   )
@@ -135,11 +146,20 @@ const MapWrapper = styled.div`
   position: absolute;
   top: 100px;
 `
-const Year = styled.h1`
-  font-family: Major Mono;
+const InfoBox = styled.div`
   position: absolute;
   right: 50px;
-  top: 450px;
+  top: 400px;
+  width: 400px;
+`
+const Year = styled.h1`
+  font-family: Major Mono;
   font-size: 100px;
   color: grey;
+`
+const Description = styled.p`
+  font-family: Major Mono;
+  font-size: 20px
+  color: grey;
+  line-height: 24px;
 `
