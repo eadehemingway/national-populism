@@ -38,12 +38,12 @@ export default function NationalPopulism() {
   }
 
   function mountD3Map() {
-    const projection = d3
-      .geoMercator()
-      .scale(1500 / Math.PI / 2)
-      .translate([580, 450])
+    const isDesktop = window.innerWidth > 500
+    const scale = isDesktop ? 1500 / Math.PI / 2 : 700 / Math.PI / 2
+    const translate = isDesktop ? [580, 450] : [350, 250]
+    const projection = d3.geoMercator().scale(scale).translate(translate)
 
-    const svg = d3.select("#map").attr("width", 1400).attr("height", 900)
+    const svg = d3.select("svg")
 
     const countryGroups = svg
       .selectAll(".country-groups")
@@ -66,7 +66,6 @@ export default function NationalPopulism() {
       .data(data.features)
       .enter()
       .append("g")
-      .attr("class", "tooltip-groups")
       .attr("class", d => `tooltip-${d.properties.postal}`)
       .style("visibility", "hidden")
 
@@ -106,23 +105,21 @@ export default function NationalPopulism() {
       return `(${1980 + index})`
     })
 
-    countryGroups
-      .on("mouseover", function (d) {
-        d3.select(`.tooltip-${d.properties.postal}`)
-          .style("visibility", "visible")
-
-          .attr(
-            "transform",
-            `translate(${d3.event.offsetX + tooltipPadding},${
-              d3.event.offsetY
-            })`
-          )
-      })
-      .on("mousemove", d => {
-        d3.select(`.tooltip-${d.properties.postal}`).attr(
+    function positionTooltip(id) {
+      d3.select(`.tooltip-${id}`)
+        .style("visibility", "visible")
+        .attr(
           "transform",
           `translate(${d3.event.offsetX + tooltipPadding},${d3.event.offsetY})`
         )
+    }
+
+    countryGroups
+      .on("mouseover", function (d) {
+        positionTooltip(d.properties.postal)
+      })
+      .on("mousemove", d => {
+        positionTooltip(d.properties.postal)
       })
       .on("mouseout", d =>
         d3
@@ -133,6 +130,8 @@ export default function NationalPopulism() {
   return (
     <MapWrapper>
       <InfoBox>
+        <Year>{1980 + index}</Year>
+
         <Description>
           The darker the red color of the country, the higher percentage of
           voters voted for national populism party that year. data from{" "}
@@ -140,12 +139,19 @@ export default function NationalPopulism() {
             Timbro authoritarian populism index
           </a>{" "}
         </Description>
-        <Year>{1980 + index}</Year>
       </InfoBox>
-      <svg id="map" />
+      <SvgStyled />
     </MapWrapper>
   )
 }
+
+const SvgStyled = styled.svg`
+  height: 900px;
+  width: 1400px;
+  @media (max-width: 500px) {
+    width: 300px;
+  }
+`
 
 const MapWrapper = styled.div`
   height: 800px;
@@ -157,17 +163,26 @@ const MapWrapper = styled.div`
 const InfoBox = styled.div`
   position: absolute;
   right: 50px;
-  top: 400px;
+  top: 250px;
   width: 400px;
+  @media (max-width: 500px) {
+    width: 250px;
+    top: 400px;
+  }
 `
 const Year = styled.h1`
   font-family: Major Mono;
-  font-size: 100px;
+  font-size: 60px;
   color: grey;
+  margin: 20px 0;
+
+  @media (max-width: 500px) {
+    font-size: 40px;
+  }
 `
 const Description = styled.p`
   font-family: Major Mono;
-  font-size: 20px
+  font-size: 20px;
   color: grey;
   line-height: 24px;
   @media (max-width: 500px) {

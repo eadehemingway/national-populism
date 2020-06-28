@@ -22,7 +22,9 @@ const ArticleTitle = styled.h1`
   line-height: 42px;
   font-family: Major Mono;
   @media (max-width: 500px) {
-    font-size: 30px;
+    font-size: 20px;
+    width: 50%;
+    line-height: 30px;
   }
 `
 const Container = styled.div`
