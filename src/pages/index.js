@@ -21,9 +21,10 @@ const ArticleTitle = styled.h1`
   text-transform: uppercase;
   line-height: 42px;
   font-family: Major Mono;
+  @media (max-width: 500px) {
+    font-size: 30px;
+  }
 `
 const Container = styled.div`
   position: relative;
-  background: #efe5db;
-  height: 100vh;
 `

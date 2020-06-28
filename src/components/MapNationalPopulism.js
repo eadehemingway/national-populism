@@ -170,4 +170,7 @@ const Description = styled.p`
   font-size: 20px
   color: grey;
   line-height: 24px;
+  @media (max-width: 500px) {
+    font-size: 12px;
+  }
 `
