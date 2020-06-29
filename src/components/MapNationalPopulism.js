@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import * as d3 from "d3"
 import data from "../data/mapEuropeWithElectionData"
+import Slider from "./Slider"
 
 export default function NationalPopulism() {
   const [index, setIndex] = useState(0)
@@ -139,6 +140,7 @@ export default function NationalPopulism() {
             Timbro authoritarian populism index
           </a>{" "}
         </Description>
+        <Slider />
       </InfoBox>
       <SvgStyled />
     </MapWrapper>
