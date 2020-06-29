@@ -140,7 +140,7 @@ export default function NationalPopulism() {
             Timbro authoritarian populism index
           </a>{" "}
         </Description>
-        <Slider />
+        <Slider year={index + 1980} />
       </InfoBox>
       <SvgStyled />
     </MapWrapper>

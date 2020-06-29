@@ -2,52 +2,46 @@ import React, { useEffect, useState } from "react"
 import * as d3 from "d3"
 import moment from "moment"
 
-export default function Slider() {
-  const minDate = new Date("2001-01-01")
-
-  const maxDate = new Date("2017-12-31")
-
+export default function Slider({ year }) {
   const step = 1
   const speed = 250
   const dateFormat = "YYYY"
-  const minYearInRange = moment(minDate).format(dateFormat)
+  const minYearInRange = 1980
+  const maxYearInRange = 2019
 
-  const maxYearInRange = moment(maxDate).format(dateFormat)
-
-  const [minYear, setMinYear] = useState(2005)
-  const [maxYear, setMaxYear] = useState(2009)
+  const [maxYear, setMaxYear] = useState(year)
 
   useEffect(() => {
     initialDrawing()
   }, [])
+  useEffect(() => {
+    moveHandle()
+  }, [year])
 
+  function moveHandle() {
+    d3.selectAll(".inner-track").attr("x2", xScale(year))
+    d3.selectAll(".max-handle").attr("cx", xScale(year))
+  }
   function initialDrawing() {
     const svg = d3.select("svg")
     const sliderGroup = svg.append("g").attr("class", "slider-group")
     sliderGroup.append("line").attr("class", "outer-track")
     sliderGroup.append("line").attr("class", "inner-track")
-    sliderGroup.append("circle").attr("class", "min-handle")
     sliderGroup.append("circle").attr("class", "max-handle")
-    sliderGroup.append("text").attr("class", "min-text")
-    sliderGroup.append("text").attr("class", "max-text")
-    sliderGroup.append("text").attr("class", "selected-min-text")
     sliderGroup.append("text").attr("class", "selected-max-text")
   }
 
+  const xScale = d3
+    .scaleLinear()
+    .domain([minYearInRange, maxYearInRange])
+    .range([0, 200])
+    .clamp(true)
+
   useEffect(() => {
     const rangeValues = d3.range(minYearInRange, maxYearInRange + step, step)
-    const isDesktop = false
 
-    const margin = isDesktop ? 50 : 30
-    const sliderWidth = 200
     const grey = "#CCCCCC"
     const purple = "#CAB1D6"
-
-    const xScale = d3
-      .scaleLinear()
-      .domain([minYearInRange, maxYearInRange])
-      .range([0, sliderWidth])
-      .clamp(true)
 
     const svg = d3.select("svg")
 
@@ -56,18 +50,18 @@ export default function Slider() {
       .attr("transform", `translate(800,600)`)
 
     const lineStrokeWidth = 4
-    function drawLine(className, x1, x2, color) {
+    function drawLine(className, x2, color) {
       sliderGroup
         .selectAll(className)
-        .attr("x1", xScale(x1))
+        .attr("x1", xScale(minYearInRange))
         .attr("x2", xScale(x2))
         .attr("stroke", color)
         .attr("stroke-linecap", "round")
         .attr("stroke-width", lineStrokeWidth)
     }
 
-    drawLine(".outer-track", minYearInRange, maxYearInRange, grey)
-    drawLine(".inner-track", minYear, maxYear, purple)
+    drawLine(".outer-track", maxYearInRange, grey)
+    drawLine(".inner-track", maxYear, purple)
 
     const drag = d3.drag().on("drag", function () {
       dragHandle(d3.select(this))
@@ -84,7 +78,6 @@ export default function Slider() {
         .call(s => drag(s))
     }
 
-    drawHandle("min", minYear)
     drawHandle("max", maxYear)
 
     const fontSize = 18
@@ -102,15 +95,6 @@ export default function Slider() {
         .attr("font-size", fontSize)
     }
 
-    drawText(".min-text", 0, lineHeight, "start", minYearInRange)
-    drawText(".max-text", sliderWidth, lineHeight, "end", maxYearInRange)
-    drawText(
-      ".selected-min-text",
-      xScale(minYear),
-      -lineHeight,
-      "middle",
-      minYear
-    )
     drawText(
       ".selected-max-text",
       xScale(maxYear),
@@ -151,26 +135,10 @@ export default function Slider() {
         interpolateX(innerTrack, x)
       }
 
-      if (minOrMax === "min" && newDateVal < maxYear) {
-        setMinYear(newDateVal)
-        updateVisual("x1")
-      }
-
-      if (minOrMax === "max" && newDateVal > minYear) {
-        setMaxYear(newDateVal)
-        updateVisual("x2")
-      }
+      setMaxYear(newDateVal)
+      updateVisual("x2")
     }
-  }, [
-    maxDate,
-    maxYear,
-    maxYearInRange,
-    minDate,
-    minYear,
-    minYearInRange,
-    speed,
-    step,
-  ])
+  }, [maxYear, maxYearInRange, minYearInRange, speed, step, xScale])
 
   return null
 }
