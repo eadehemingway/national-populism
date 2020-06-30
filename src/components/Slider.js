@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import * as d3 from "d3"
 
-export default function Slider({ year, playing }) {
+export default function Slider({ year }) {
   const [maxYear, setMaxYear] = useState(year)
   const step = 1
   const speed = 250

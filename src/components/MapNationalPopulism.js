@@ -152,7 +152,7 @@ setIndex(0)
             Timbro authoritarian populism index
           </a>{" "}
         </Description>
-        <Slider year={index + 1980} playing={playing}/>
+        <Slider year={index + 1980} />
 
         {atEnd ? <Img src={restart} onClick={handleRestart}/> :
         <Img onClick={()=> setPlaying(!playing)} src={buttonIcon}/>
