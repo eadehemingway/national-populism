@@ -3,15 +3,20 @@ import styled from "styled-components"
 import * as d3 from "d3"
 import data from "../data/mapEuropeWithElectionData"
 import Slider from "./Slider"
+import pause from '../assets/pause.png'
+import play from '../assets/play.svg'
+import restart from '../assets/restart.png'
 
 export default function NationalPopulism() {
   const [index, setIndex] = useState(0)
+  const [playing, setPlaying] = useState(true)
 
   useEffect(() => {
     mountD3Map()
   }, [])
 
   useEffect(() => {
+    if(!playing) return
     if (index >= 39) return
     let id = setTimeout(() => {
       setIndex(index + 1)
@@ -128,6 +133,13 @@ export default function NationalPopulism() {
           .style("visibility", "hidden")
       )
   }
+
+  function handleRestart () {
+setPlaying(true)
+setIndex(0)
+  }
+  const atEnd = index=== 39
+  const buttonIcon = playing?  pause : play
   return (
     <MapWrapper>
       <InfoBox>
@@ -140,13 +152,29 @@ export default function NationalPopulism() {
             Timbro authoritarian populism index
           </a>{" "}
         </Description>
-        <Slider year={index + 1980} />
+        <Slider year={index + 1980} playing={playing}/>
+
+        {atEnd ? <Img src={restart} onClick={handleRestart}/> :
+        <Img onClick={()=> setPlaying(!playing)} src={buttonIcon}/>
+        }
+
       </InfoBox>
       <SvgStyled />
     </MapWrapper>
   )
 }
 
+const Img = styled.img`
+position:absolute;
+right: 370px;
+top: 350px;
+height: 15px;
+width: 15px;
+background: none;
+font-family: Major Mono;
+outline: none;
+cursor: pointer;
+`
 const SvgStyled = styled.svg`
   height: 900px;
   width: 1400px;

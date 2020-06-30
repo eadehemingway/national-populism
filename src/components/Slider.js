@@ -1,55 +1,41 @@
 import React, { useEffect, useState } from "react"
 import * as d3 from "d3"
-import moment from "moment"
 
-export default function Slider({ year }) {
+export default function Slider({ year, playing }) {
+  const [maxYear, setMaxYear] = useState(year)
   const step = 1
   const speed = 250
-  const dateFormat = "YYYY"
+
   const minYearInRange = 1980
   const maxYearInRange = 2019
 
-  const [maxYear, setMaxYear] = useState(year)
 
   useEffect(() => {
     initialDrawing()
   }, [])
+
   useEffect(() => {
     moveHandle()
   }, [year])
 
   function moveHandle() {
     d3.selectAll(".inner-track").attr("x2", xScale(year))
-    d3.selectAll(".max-handle").attr("cx", xScale(year))
+    d3.selectAll(".max-handle").attr("x", xScale(year))
+
   }
+
   function initialDrawing() {
     const svg = d3.select("svg")
-    const sliderGroup = svg.append("g").attr("class", "slider-group")
+    const sliderGroup = svg.append("g").attr("class", "slider-group").attr("transform", `translate(1020,600)`)
     sliderGroup.append("line").attr("class", "outer-track")
     sliderGroup.append("line").attr("class", "inner-track")
-    sliderGroup.append("circle").attr("class", "max-handle")
-    sliderGroup.append("text").attr("class", "selected-max-text")
-  }
+    sliderGroup.append("rect").attr("class", "max-handle")
 
-  const xScale = d3
-    .scaleLinear()
-    .domain([minYearInRange, maxYearInRange])
-    .range([0, 200])
-    .clamp(true)
-
-  useEffect(() => {
     const rangeValues = d3.range(minYearInRange, maxYearInRange + step, step)
 
     const grey = "#CCCCCC"
-    const purple = "#CAB1D6"
-
-    const svg = d3.select("svg")
-
-    const sliderGroup = svg
-      .selectAll(".slider-group")
-      .attr("transform", `translate(800,600)`)
-
     const lineStrokeWidth = 4
+
     function drawLine(className, x2, color) {
       sliderGroup
         .selectAll(className)
@@ -61,53 +47,31 @@ export default function Slider({ year }) {
     }
 
     drawLine(".outer-track", maxYearInRange, grey)
-    drawLine(".inner-track", maxYear, purple)
+    drawLine(".inner-track", maxYear, 'coral')
 
     const drag = d3.drag().on("drag", function () {
       dragHandle(d3.select(this))
     })
 
-    function drawHandle(minMax, xVal) {
+
       const handleRadius = 8
       sliderGroup
-        .selectAll(`.${minMax}-handle`)
-        .attr("cx", xScale(xVal))
+        .selectAll(`.max-handle`)
+        .attr("x", xScale(maxYear))
+        .attr("y", - handleRadius)
         .attr("cursor", "pointer")
-        .attr("fill", purple)
-        .attr("r", handleRadius)
+        .attr("fill", 'coral')
+        .attr("width", handleRadius)
+        .attr("height", handleRadius * 2)
         .call(s => drag(s))
-    }
 
-    drawHandle("max", maxYear)
 
-    const fontSize = 18
-    const padding = 7
-    const lineHeight = fontSize + padding + lineStrokeWidth
-    function drawText(className, x, y, textAnchor, textString) {
-      const textOpacity = 0.7
-      sliderGroup
-        .selectAll(className)
-        .attr("x", x)
-        .attr("y", y)
-        .style("text-anchor", textAnchor)
-        .text(textString)
-        .attr("opacity", textOpacity)
-        .attr("font-size", fontSize)
-    }
 
-    drawText(
-      ".selected-max-text",
-      xScale(maxYear),
-      -lineHeight,
-      "middle",
-      maxYear
-    )
 
-    function dragHandle(selection) {
-      const handleClass = selection.attr("class")
-      const minOrMax = handleClass.split("-")[0]
+    function dragHandle() {
+
+
       const oldXCoordinate = d3.event.x
-
       const oldDateVal = xScale.invert(oldXCoordinate)
       const indexOfNewVal = rangeValues.findIndex(val => {
         const bottomMidPoint = val - step / 2
@@ -126,19 +90,21 @@ export default function Slider({ year }) {
           )
       }
 
-      function updateVisual(x) {
-        const innerTrack = d3.selectAll(".inner-track")
-        const handle = d3.selectAll(`.${minOrMax}-handle`)
-        const text = d3.selectAll(`.selected-${minOrMax}-text`)
-        interpolateX(handle, "cx")
-        interpolateX(text, "x")
-        interpolateX(innerTrack, x)
-      }
 
       setMaxYear(newDateVal)
-      updateVisual("x2")
-    }
-  }, [maxYear, maxYearInRange, minYearInRange, speed, step, xScale])
+      const innerTrack = d3.selectAll(".inner-track")
+      const handle = d3.selectAll(`.max-handle`)
+
+      interpolateX(handle, "x")
+      interpolateX(innerTrack, 'x2')
+  }
+  }
+  const xScale = d3
+    .scaleLinear()
+    .domain([minYearInRange, maxYearInRange])
+    .range([0, 300])
+    .clamp(true)
+
 
   return null
 }
